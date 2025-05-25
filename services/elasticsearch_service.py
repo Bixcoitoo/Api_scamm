@@ -10,24 +10,49 @@ import os
 logger = logging.getLogger(__name__)
 
 class ElasticsearchService:
-    def __init__(self, data_path: str = "/caminho/do/seu/hd/elasticsearch"):
-        self.data_path = data_path
-        os.makedirs(data_path, exist_ok=True)
-        
-        self.es = Elasticsearch(
-            ['http://localhost:9200'],
-            retry_on_timeout=True,
-            max_retries=3,
-            timeout=30
-        )
-        self.index_name = 'pessoas'
-        
-    async def check_connection(self):
+    def __init__(self):
+        try:
+            # Inicializa o cliente do Elasticsearch
+            self.es = Elasticsearch(
+                hosts=['http://elasticsearch:9200'],
+                verify_certs=False
+            )
+            logger.info("Elasticsearch inicializado com sucesso")
+        except Exception as e:
+            logger.error(f"Erro ao inicializar Elasticsearch: {str(e)}")
+            raise
+    
+    def check_connection(self):
+        """Verifica se a conexão com o Elasticsearch está funcionando"""
         try:
             return self.es.ping()
         except Exception as e:
-            logger.error(f"Erro ao conectar com Elasticsearch: {str(e)}")
+            logger.error(f"Erro ao verificar conexão com Elasticsearch: {str(e)}")
             return False
+    
+    async def search_nome(self, nome: str, limit: int = 10):
+        """Busca pessoas por nome"""
+        try:
+            query = {
+                "query": {
+                    "match": {
+                        "nome": nome
+                    }
+                },
+                "size": limit
+            }
+            
+            response = self.es.search(
+                index="pessoas",
+                body=query
+            )
+            
+            hits = response['hits']['hits']
+            return [hit['_source'] for hit in hits]
+            
+        except Exception as e:
+            logger.error(f"Erro ao buscar por nome: {str(e)}")
+            raise
         
     async def create_index(self):
         settings = {
@@ -163,47 +188,6 @@ class ElasticsearchService:
                     
         except Exception as e:
             print(f"❌ Erro ao indexar dados: {str(e)}")
-            raise
-    
-    async def search_nome(self, nome: str, limit: int = 10) -> List[Dict]:
-        """Busca pessoas por nome"""
-        try:
-            nomes = nome.strip().split()
-            if len(nomes) < 2:
-                raise HTTPException(
-                    status_code=400,
-                    detail="Por favor, forneça nome e sobrenome para busca"
-                )
-
-            query = {
-                "query": {
-                    "bool": {
-                        "must": [
-                            {
-                                "match": {
-                                    "nome": {
-                                        "query": nome,
-                                        "operator": "and",
-                                        "fuzziness": "AUTO"
-                                    }
-                                }
-                            }
-                        ]
-                    }
-                },
-                "size": limit
-            }
-
-            result = self.es.search(
-                index=self.index_name,
-                body=query
-            )
-
-            hits = result['hits']['hits']
-            return [hit['_source'] for hit in hits]
-
-        except Exception as e:
-            logger.error(f"Erro na busca Elasticsearch: {str(e)}")
             raise
 
     async def _search_nome_sqlite(self, nome: str, limit: int = 10) -> List[Dict]:

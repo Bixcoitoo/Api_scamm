@@ -16,4 +16,4 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
 
 API_URL = "http://localhost:3000"
-API_KEY = "maria1316"
+API_KEY = "scammnet-api-key-2024"

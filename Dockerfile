@@ -12,6 +12,7 @@ RUN apt-get update && \
     apt-get install -y gcc libpq-dev && \
     pip install --upgrade pip && \
     pip install -r requirements.txt && \
+    pip install pydantic-settings && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copia todo o código da API para dentro do container

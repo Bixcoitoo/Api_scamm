@@ -1,0 +1,457 @@
+:root {
+    --primary-color: #00ff9d;
+    --secondary-color: #004d2c;
+    --background-color: #0a0a0a;
+    --text-color: #ffffff;
+}
+
+.profile-container {
+    max-width: 1200px;
+    width: 90%;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 1px solid var(--primary-color);
+    box-sizing: border-box;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--primary-color);
+}
+
+.profile-header h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.profile-header h2 i {
+    color: var(--primary-color);
+}
+
+.profile-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #1E2127;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-color);
+}
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid #00fff2;
+    object-fit: cover;
+}
+
+.change-avatar-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #00fff2;
+    border: none;
+    border-radius: 50%;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.profile-sections {
+    padding: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.profile-nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.nav-link {
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 0.8rem 1.5rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link i {
+    color: var(--primary-color);
+}
+
+.nav-link:hover, .nav-link.active {
+    background: var(--primary-color);
+    color: var(--background-color);
+}
+
+.nav-link:hover i, .nav-link.active i {
+    color: var(--background-color);
+}
+
+.section-content {
+    display: none;
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+}
+
+.section-content.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--text-color);
+}
+
+.neon-input {
+    width: 100%;
+    padding: 0.8rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--primary-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    transition: all 0.3s ease;
+}
+
+.neon-input:focus {
+    outline: none;
+    box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+}
+
+.neon-button {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.neon-button:hover {
+    background: var(--primary-color);
+    color: var(--background-color);
+    box-shadow: 0 0 15px rgba(0, 255, 157, 0.3);
+}
+
+.wallet-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.balance {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.balance span {
+    color: var(--text-color);
+}
+
+.balance h4 {
+    color: var(--primary-color);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.transactions-list {
+    max-width: 480px;
+    margin: 1rem auto;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
+}
+
+.security-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+    gap: 1rem;
+}
+
+.neon-button.danger {
+    border-color: #ff4444;
+    color: #ff4444;
+}
+
+.neon-button.danger:hover {
+    background: rgba(255, 68, 68, 0.1);
+}
+
+.achievements-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.achievement-item {
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.achievement-icon {
+    font-size: 2rem;
+    color: #00fff2;
+    margin-bottom: 0.5rem;
+}
+
+.profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(0, 255, 157, 0.1);
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-name, .user-email {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-color);
+}
+
+.user-name i, .user-email i {
+    color: var(--primary-color);
+}
+
+.username {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 0.95rem;
+}
+
+.email {
+    font-size: 0.85rem;
+    color: #8F9199;
+}
+
+.status-badge {
+    background: var(--primary-color);
+    color: var(--background-color);
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.neon-input.invalid {
+    border-color: #ff0000;
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.neon-input.invalid:focus {
+    border-color: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+@media screen and (max-width: 768px) {
+    .profile-container {
+        width: 95%;
+        padding: 1rem;
+        margin: 1rem auto;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+
+    .profile-nav {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .nav-link {
+        width: 100%;
+        justify-content: center;
+        padding: 0.8rem;
+        box-sizing: border-box;
+    }
+
+    .user-info {
+        flex-direction: column;
+        align-items: center;
+        padding: 0.8rem;
+    }
+
+    .section-content {
+        padding: 0.5rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .profile-container {
+        width: 100%;
+        margin: 0.5rem auto;
+        border-radius: 0;
+        padding: 0.8rem;
+    }
+
+    .profile-sections {
+        padding: 0.5rem;
+    }
+
+    pre {
+        font-size: 0.4em;
+        margin: 1rem 0;
+        padding: 0;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.6rem;
+        font-size: 16px;
+    }
+
+    .profile-header h2 {
+        font-size: 1.4rem;
+    }
+}
+
+@media screen and (max-width: 360px) {
+    .profile-container {
+        padding: 0.5rem;
+    }
+
+    .profile-sections {
+        padding: 0.3rem;
+    }
+
+    .nav-link {
+        padding: 0.6rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (min-width: 1200px) {
+    .profile-container {
+        max-width: 1400px;
+    }
+
+    .profile-sections {
+        max-width: 800px;
+    }
+}
+
+@media screen and (max-height: 600px) {
+    .profile-container {
+        margin: 0.5rem auto;
+    }
+
+    .profile-sections {
+        padding: 1rem;
+    }
+}
+
+@media screen and (max-height: 450px) and (orientation: landscape) {
+    .profile-container {
+        margin: 0 auto;
+    }
+
+    .profile-sections {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .section-content {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+}
+
+@media (hover: none) {
+    .nav-link,
+    button {
+        padding: 1rem;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
+
+.profile-container * {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .profile-container * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+.section-content {
+    contain: content;
+    content-visibility: auto;
+}
+
+img {
+    content-visibility: auto;
+    contain: size layout paint;
+}

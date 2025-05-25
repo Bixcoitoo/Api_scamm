@@ -1,0 +1,82 @@
+@keyframes mudarCor {
+    0% { color: greenyellow; }
+    50% { color: blue; }
+    100% { color: greenyellow; }
+}
+
+body{
+    background:black;
+    color: white;
+    padding: 0;
+}
+
+
+
+pre{
+    color:greenyellow;
+    width: 50%; 
+    margin: 0 auto;
+    animation: mudarCor 2s infinite;
+    margin-top: 50px;
+
+}
+main{
+    width: 50%; 
+    margin: 0 auto;
+    border-style: ridge;
+    height: 400px;
+    text-align: center;
+    border-radius: 12px;
+}
+
+nav {
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+li {
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 5px;
+    background-color: black; 
+}
+
+
+#historico:hover {
+    background-color: rgb(49, 175, 106);
+    color: black;
+}
+
+#sair:hover {
+    background-color: rgb(49, 175, 106);
+    color: black;
+}
+
+    
+form {
+    display: inline-block;
+    vertical-align: top;
+    width: 40%;
+}
+
+#painel {
+    display: inline-block;
+    background: white;
+    width: 40%;
+    height: 100px;
+    vertical-align: top;
+    border-radius: 12px;
+
+}
+
+a{
+    text-decoration: none;
+    color: white;
+}

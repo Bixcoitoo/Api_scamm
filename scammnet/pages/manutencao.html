@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site em Manutenção</title>
+    <style>
+        body {
+            background: #181818;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .container {
+            background: #232323;
+            padding: 2rem 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px #0008;
+            text-align: center;
+        }
+        h1 {
+            color: #ffb300;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #ccc;
+            font-size: 1.2rem;
+        }
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        #status {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #ffb300;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+    console.log('🔵 Iniciando verificação periódica da API...');
+    let tentativas = 0;
+    const maxTentativas = 12; // 2 minutos (5 segundos * 12)
+
+    async function verificarAPI() {
+        try {
+            console.log('📡 Verificando status da API...');
+            const response = await fetch('https://api.magalha.space/api/status', { 
+                cache: 'no-store',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-API-Key': 'scammnet-api-key-2024',
+                    'Origin': window.location.origin
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error('API ainda offline');
+            }
+            
+            const data = await response.json();
+            console.log('📦 Dados recebidos:', data);
+            
+            if (data.status === 'online' || data.status === 'degraded' || data.status === 'operational') {
+                console.log('✅ API disponível! Redirecionando...');
+                // Verifica se o usuário está autenticado
+                const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+                if (token) {
+                    window.location.href = '/pages/main.html';
+                } else {
+                    window.location.href = '/index.html';
+                }
+                return;
+            }
+            
+            throw new Error('API ainda em manutenção');
+        } catch (e) {
+            console.log('❌ API ainda indisponível:', e.message);
+            tentativas++;
+            
+            if (tentativas >= maxTentativas) {
+                document.getElementById('status').innerHTML = 'Tempo limite de verificação atingido. Por favor, tente novamente mais tarde.';
+                return;
+            }
+            
+            document.getElementById('status').innerHTML = `Verificando novamente em 5 segundos... (Tentativa ${tentativas}/${maxTentativas})`;
+            setTimeout(verificarAPI, 5000); // Verifica a cada 5 segundos
+        }
+    }
+
+    // Inicia a verificação quando a página carregar
+    window.onload = function() {
+        document.getElementById('status').innerHTML = 'Verificando status da API... <div class="loading"></div>';
+        verificarAPI();
+    };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔧</div>
+        <h1>Estamos em manutenção</h1>
+        <p>O sistema está temporariamente indisponível.<br>
+        Voltaremos em breve!<br><br>
+        Se precisar de suporte, entre em contato com o administrador.</p>
+        <div id="status"></div>
+    </div>
+</body>
+</html> 

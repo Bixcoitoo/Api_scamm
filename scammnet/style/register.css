@@ -1,0 +1,79 @@
+body .auth-main {
+    max-width: 400px;
+    width: 90%;
+    margin: 1rem auto 10rem auto;
+    padding: 2.9rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #00ff9d;
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.2);
+    height: auto !important;
+    min-height: auto !important;
+}
+
+.input-group {
+    margin-bottom: 0.5rem !important;
+}
+
+.input-group label {
+    font-size: 0.8rem;
+    margin-bottom: 0.2rem;
+    color: var(--primary-color);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.4rem;
+    background: transparent;
+    border: 1px solid #00ff9d;
+    border-radius: 8px;
+    color: #00ff9d;
+    font-size: 0.9rem;
+    box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+}
+
+.input-group input::placeholder {
+    color: rgba(0, 255, 157, 0.5);
+}
+
+.neon-button {
+    background: transparent;
+    border: 1px solid #00ff9d;
+    color: #00ff9d;
+    padding: 0.8rem 1.5rem;
+    width: 100%;
+    margin-top: 2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+body .auth-main .neon-button {
+    padding: 0.8rem 1.5rem;
+    margin-top: 2rem;
+    width: 100%;
+}
+
+.neon-button:hover {
+    background: #00ff9d;
+    color: black;
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+}
+
+.neon-link {
+    color: #00ff9d;
+    text-decoration: none;
+}
+
+h1 {
+    font-size: 1.5rem !important;
+    margin-bottom: 0.8rem !important;
+    text-align: center;
+}
+
+.auth-links {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    text-align: center;
+} 

@@ -1,0 +1,148 @@
+/* Estilos base do footer */
+footer {
+    width: 100%;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+    border-top: 2px solid var(--primary-color);
+    margin-top: 100px;
+    position: relative;
+    box-shadow: 0 -10px 30px rgba(0, 255, 157, 0.05);
+    clear: both;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    position: relative;
+}
+
+.footer-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 255, 157, 0.02);
+    pointer-events: none;
+}
+
+.footer-section {
+    display: flex;
+    gap: 40px;
+}
+
+.footer-section a {
+    color: var(--text-color);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    padding: 8px 15px;
+    border-radius: 8px;
+    background: rgba(0, 255, 157, 0.03);
+    border: 1px solid transparent;
+}
+
+.footer-section a:hover {
+    color: var(--primary-color);
+    opacity: 1;
+    transform: translateY(-2px);
+    background: rgba(0, 255, 157, 0.05);
+    border: 1px solid rgba(0, 255, 157, 0.1);
+}
+
+.footer-section i {
+    font-size: 1.1em;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(0, 255, 157, 0.1);
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.footer-bottom p {
+    opacity: 0.7;
+    font-size: 0.9rem;
+}
+
+.footer-links {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-links a {
+    color: var(--text-color);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+    opacity: 1;
+}
+
+/* Ajuste para o pre */
+pre {
+    font-size: 0.75em;
+    line-height: 1.2;
+    margin: 20px auto;
+    white-space: pre;
+    display: block;
+    padding: 0;
+    width: 100%;
+    max-width: 1200px;
+    overflow: visible;
+}
+
+@media screen and (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+    
+    .footer-section {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .footer-bottom {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    pre {
+        font-size: 0.55em;
+        margin: 10px auto;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    pre {
+        font-size: 0.45em;
+        margin: 5px auto;
+    }
+}

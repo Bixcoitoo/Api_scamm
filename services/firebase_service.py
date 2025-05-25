@@ -5,6 +5,7 @@ from datetime import datetime
 import logging
 import json
 from services.preco_service import PrecoService
+from config.firebase_config import get_firebase_credentials
 
 logger = logging.getLogger(__name__)
 
@@ -20,19 +21,30 @@ class FirebaseService:
     def __init__(self):
         if not self._initialized:
             try:
-                cred = credentials.Certificate("scammapi-firebase-adminsdk-fbsvc-5a86f9cc92.json")
-                firebase_admin.initialize_app(cred, {
-                    'databaseURL': 'https://scammapi-default-rtdb.firebaseio.com'
-                })
-                self.db = db.reference()
-                logger.info("Firebase Realtime Database inicializado com sucesso")
+                # Obtém as credenciais das variáveis de ambiente
+                credentials_dict = get_firebase_credentials()
+                
+                if not credentials_dict:
+                    logger.error("Não foi possível obter as credenciais do Firebase")
+                    return
+                
+                # Inicializa o Firebase Admin SDK
+                cred = credentials.Certificate(credentials_dict)
+                firebase_admin.initialize_app(cred)
+                logger.info("Firebase inicializado com sucesso")
                 FirebaseService._initialized = True
             except Exception as e:
                 logger.error(f"Erro ao inicializar Firebase: {str(e)}")
-                raise HTTPException(
-                    status_code=500,
-                    detail="Erro ao inicializar conexão com Firebase"
-                )
+                FirebaseService._initialized = False
+        
+    def check_connection(self):
+        try:
+            db = firestore.client()
+            docs = db.collection('usuarios').limit(1).get()
+            return True
+        except Exception as e:
+            logger.error(f"Erro ao verificar conexão com Firestore: {str(e)}")
+            return False
         
     async def verificar_saldo(self, user_id: str, tipo_consulta: str, detalhes: dict = None) -> bool:
         logger.info(f"Verificando saldo para usuário {user_id} - tipo consulta: {tipo_consulta}")

@@ -1,0 +1,14 @@
+.transaction-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.debit .transaction-amount {
+    color: #ff4444;
+}
+
+.credit .transaction-amount {
+    color: #00C851;
+} 

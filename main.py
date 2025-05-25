@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, Body
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks, Query, Body, Request
 from fastapi.security.api_key import APIKeyHeader
 from typing import Optional, List
 from pydantic import BaseModel
@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse, HTMLResponse, Response
 import apsw
 from validators.cpf_validator import CPFValidator
 from config.settings import API_SETTINGS, SECURITY
+from config.public_settings import PUBLIC_CONFIG
 from middleware.rate_limit import RateLimitMiddleware
 from middleware.security_headers import SecurityHeadersMiddleware
 from routes import consulta_routes, credito_routes, admin_routes, admin_auth
@@ -31,6 +32,7 @@ import uuid
 from datetime import datetime
 import time
 from dotenv import load_dotenv
+import redis
 try:
     from services.elasticsearch_service import ElasticsearchService
     HAS_ELASTICSEARCH = True
@@ -49,9 +51,10 @@ from models.pessoa import PessoaCompleta, DadosBasicos, Contatos, Financeiro, Pr
 from services.endereco_service import get_endereco
 from utils.logger import setup_logger
 from middleware.transaction_logger import TransactionLoggerMiddleware
-from config.firebase_config import generate_service_account_file
+from config.firebase_config import get_firebase_credentials
 from services.firebase_service import FirebaseService
 from database.connection import get_db_connection, connection_pools
+from services.external_api_service import ExternalAPIService
 
 # Configuração dos diretórios
 BASE_DIR = Path(__file__).parent.parent
@@ -73,22 +76,36 @@ load_dotenv()
 # Inicializa o serviço do Firebase
 firebase_service = FirebaseService()
 
+# Inicializa o serviço da API externa
+external_api_service = ExternalAPIService()
+
+# Inicializa o serviço Elasticsearch
+elasticsearch_service = ElasticsearchService()
+
+def check_redis_connection():
+    try:
+        r = redis.Redis(
+            host=os.getenv("REDIS_HOST", "redis"),
+            port=int(os.getenv("REDIS_PORT", 6379)),
+            db=int(os.getenv("REDIS_DB", 0)),
+            socket_connect_timeout=2
+        )
+        r.ping()
+        return True
+    except Exception as e:
+        return False
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Configuração ao iniciar
     logger.info("Iniciando aplicação...")
     load_dotenv()
-    
-    # Inicializa o Firebase
     try:
-        firebase_service = FirebaseService()
         logger.info("Firebase inicializado com sucesso")
     except Exception as e:
         logger.error(f"Erro ao inicializar Firebase: {str(e)}")
         raise
-    
     yield
-    
     # Limpeza ao encerrar
     logger.info("Encerrando aplicação...")
 
@@ -372,18 +389,21 @@ async def _consulta_telefone(telefone: str, api_key: str):
         )
 
 
-# Middleware
+# Configuração do CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://scammnet.site"],  # Só aceita seu frontend
+    allow_origins=["https://scammnet.site"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 # Adiciona middleware
 app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(TransactionLoggerMiddleware)
+app.add_middleware(RateLimitMiddleware)
 
 # Inclui as rotas
 app.include_router(admin_auth.router, prefix="/api")
@@ -621,23 +641,7 @@ async def root():
         "healthcheck": "ok"
     }
 
-@app.get("/stats", tags=["Status"])
-async def stats():
-    """Retorna estatísticas da API"""
-    try:
-        with get_db_connection("SRS_CONTATOS") as conn:
-            cursor = conn.cursor()
-            stats = {
-                "total_registros": cursor.execute("SELECT COUNT(*) FROM SRS_CONTATOS").fetchone()[0],
-                "total_telefones": cursor.execute("SELECT COUNT(*) FROM SRS_HISTORICO_TELEFONES").fetchone()[0],
-                "total_emails": cursor.execute("SELECT COUNT(*) FROM SRS_EMAIL").fetchone()[0],
-                "ultima_atualizacao": "2024-03-14"
-            }
-            return stats
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.get("/health", tags=["Status"])
+@app.get("/api/health", tags=["Status"])
 async def health():
     """Verifica saúde dos serviços"""
     try:
@@ -656,36 +660,133 @@ async def health():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-async def reconnection_task():
-    while True:
+@app.get("/api/stats", tags=["Status"])
+async def stats():
+    """Retorna estatísticas da API"""
+    try:
+        with get_db_connection("SRS_CONTATOS") as conn:
+            cursor = conn.cursor()
+            stats = {
+                "total_registros": cursor.execute("SELECT COUNT(*) FROM SRS_CONTATOS").fetchone()[0],
+                "total_telefones": cursor.execute("SELECT COUNT(*) FROM SRS_HISTORICO_TELEFONES").fetchone()[0],
+                "total_emails": cursor.execute("SELECT COUNT(*) FROM SRS_EMAIL").fetchone()[0],
+                "ultima_atualizacao": "2024-03-14"
+            }
+            return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/status")
+async def get_status():
+    """Endpoint para verificar o status da API e seus serviços"""
+    try:
+        # Verifica o status do banco de dados (serviço essencial)
+        db_status = await check_database_connection()
+        
+        # Verifica o status dos serviços opcionais
+        redis_status = check_redis_connection()
+        firebase_status = firebase_service.check_connection()
+        elasticsearch_status = elasticsearch_service.check_connection()
+        
+        # Determina o status geral
+        if db_status:
+            status = "operational"
+        else:
+            status = "degraded"
+            
+        # Coleta informações dos serviços
+        services = {
+            "database": {
+                "status": "online" if db_status else "offline",
+                "required": True
+            },
+            "redis": {
+                "status": "online" if redis_status else "offline",
+                "required": False
+            },
+            "firebase": {
+                "status": "online" if firebase_status else "offline",
+                "required": False
+            },
+            "elasticsearch": {
+                "status": "online" if elasticsearch_status else "offline",
+                "required": False
+            }
+        }
+        
+        return {
+            "status": status,
+            "services": services,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        logger.error(f"Erro ao verificar status: {str(e)}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
+@app.get("/api/consulta")
+@app.post("/api/consulta")
+async def proxy_consulta(
+    request: Request,
+    api_key: str = Depends(api_key_header)
+):
+    """
+    Proxy para a rota de consulta da API externa
+    """
+    if api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Chave API inválida")
+    
+    params = dict(request.query_params)
+    if request.method == "POST":
         try:
-            logger.info("🔍 Verificando conexões...")
-            active_conns = len(connection_manager._active_connections)
-            logger.info(f"""
-📊 Status das Conexões:
-- Conexões ativas: {active_conns}
-- Última reconexão: {datetime.fromtimestamp(connection_manager._last_reconnect).strftime('%H:%M:%S')}
-- Próxima reconexão em: {max(0, 5 - (time.time() - connection_manager._last_reconnect)):.1f}s
-""")
-            await asyncio.sleep(5)
-        except Exception as e:
-            logger.error(f"❌ Erro na tarefa de reconexão: {e}")
-            await asyncio.sleep(1)
+            body = await request.json()
+            params.update(body)
+        except:
+            pass
+    
+    return await external_api_service.get_consulta(params)
 
-@app.options("/auth/login")
-async def options_login():
-    return Response(status_code=200)
+@app.get("/api/coins")
+async def proxy_coins(
+    request: Request,
+    api_key: str = Depends(api_key_header)
+):
+    """
+    Proxy para a rota de coins da API externa
+    """
+    if api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Chave API inválida")
+    
+    params = dict(request.query_params)
+    return await external_api_service.get_coins(params)
 
-@app.middleware("http")
-async def global_options_handler(request, call_next):
-    if request.method == "OPTIONS":
-        response = Response(status_code=200)
-        response.headers["Access-Control-Allow-Origin"] = "https://scammnet.site"
-        response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
-        response.headers["Access-Control-Allow-Headers"] = "*"
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        return response
-    return await call_next(request)
+@app.get("/api/precos")
+async def proxy_precos(
+    request: Request,
+    api_key: str = Depends(api_key_header)
+):
+    """
+    Proxy para a rota de preços da API externa
+    """
+    if api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Chave API inválida")
+    
+    params = dict(request.query_params)
+    return await external_api_service.get_precos(params)
+
+async def check_database_connection():
+    """Verifica se a conexão com o banco de dados está funcionando"""
+    try:
+        with get_db_connection("SRS_CONTATOS") as conn:
+            conn.cursor().execute("SELECT 1")
+        return True
+    except Exception as e:
+        logger.error(f"Erro ao conectar com banco de dados: {str(e)}")
+        return False
 
 if __name__ == "__main__":
     config = uvicorn.Config(

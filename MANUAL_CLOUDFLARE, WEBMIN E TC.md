@@ -526,7 +526,9 @@ docker run -d \
 cd /caminho/para/sua/api
 
 # Construir e iniciar os containers
-docker compose up -d --build
+docker compose down && docker compose build --no-cache fastapi_app && docker compose up -d
+
+
 
 # Verificar status dos containers
 docker compose ps
