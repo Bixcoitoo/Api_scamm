@@ -7,13 +7,19 @@ WORKDIR /app
 # Copia o arquivo de dependências
 COPY requirements.txt .
 
-# Instala dependências do sistema e Python
+# Instala dependências do sistema
 RUN apt-get update && \
-    apt-get install -y gcc libpq-dev && \
-    pip install --upgrade pip && \
+    apt-get install -y \
+    gcc \
+    libpq-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Atualiza pip e instala dependências Python
+RUN pip install --upgrade pip && \
+    pip install wheel setuptools && \
     pip install -r requirements.txt && \
-    pip install pydantic-settings && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    pip install pydantic-settings
 
 # Copia todo o código da API para dentro do container
 COPY . .

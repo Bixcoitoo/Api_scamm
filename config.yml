@@ -1,0 +1,47 @@
+tunnel: meutunel
+credentials-file: /home/isacbx/.cloudflared/3bc969e5-e707-452a-a7d5-d2c1dcb84518.json
+
+ingress:
+  - hostname: portainer.magalha.space
+    service: http://192.168.0.145:9000
+  - hostname: painel.magalha.space
+    service: http://192.168.0.145:80
+  - hostname: webmin.magalha.space
+    service: http://192.168.0.145:10000
+  - hostname: cockpit.magalha.space
+    service: http://192.168.0.145:9090
+  - hostname: harvester-api.magalha.space
+    service: http://192.168.0.145:8183
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+      keepAliveTimeout: 30s
+      keepAliveConnections: 100
+      httpHostHeader: harvester-api.magalha.space
+      disableChunkedEncoding: true
+      noHappyEyeballs: true
+      tcpKeepAlive: 30s
+      headers:
+        Access-Control-Allow-Origin: https://harvesterdownloader.site
+        Access-Control-Allow-Methods: GET, POST, OPTIONS
+        Access-Control-Allow-Headers: Content-Type, Accept
+        Access-Control-Allow-Credentials: true
+  - hostname: api.magalha.space
+    service: http://192.168.0.145:4200
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+      keepAliveTimeout: 30s
+      keepAliveConnections: 100
+      httpHostHeader: api.magalha.space
+      disableChunkedEncoding: true
+      noHappyEyeballs: true
+      tcpKeepAlive: 30s
+      headers:
+        Access-Control-Allow-Origin: "*"
+        Access-Control-Allow-Methods: "GET, POST, PUT, DELETE, OPTIONS"
+        Access-Control-Allow-Headers: "Content-Type, Authorization, X-API-Key"
+        Access-Control-Allow-Credentials: "true"
+  - hostname: tiu-bot.magalha.space
+    service: http://192.168.0.145:3001
+  - service: http_status:404 
