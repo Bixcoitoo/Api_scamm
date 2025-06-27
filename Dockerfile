@@ -32,3 +32,4 @@ EXPOSE 4200
 
 # Comando para rodar a API (ajustado para usar SSL se os arquivos existirem)
 CMD ["python", "run.py"]
+

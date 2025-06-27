@@ -35,18 +35,12 @@ if __name__ == "__main__":
     if not check_redis_connection():
         print("⚠️ Redis não está disponível. A API iniciará sem rate limiting.")
     
-    # Inicia a API em modo produção
+    # Inicia a API
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
         port=4200,
-        reload=False,  # Desativa o reload em produção
+        reload=True,
         proxy_headers=True,
-        forwarded_allow_ips="*",
-        workers=4,  # Aumenta o número de workers para melhor performance
-        limit_concurrency=1000,  # Limita o número de conexões concorrentes
-        backlog=2048,  # Aumenta o backlog de conexões
-        timeout_keep_alive=30,  # Mantém conexões vivas por 30 segundos
-        access_log=True,
-        use_colors=False  # Desativa cores no log em produção
+        forwarded_allow_ips="*"
     ) 

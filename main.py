@@ -118,28 +118,6 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configuração do CORS para produção
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://scammnet.site",
-        "https://www.scammnet.site",
-        "https://api.magalha.space"
-    ],
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=[
-        "Content-Type",
-        "Authorization",
-        "X-API-Key",
-        "Accept",
-        "Origin",
-        "X-Requested-With"
-    ],
-    expose_headers=["Content-Type", "X-API-Key"],
-    max_age=3600
-)
-
 API_KEY = SECURITY['api_key']
 api_key_header = APIKeyHeader(name="X-API-Key")
 
@@ -410,6 +388,17 @@ async def _consulta_telefone(telefone: str, api_key: str):
             detail=f"Erro ao consultar dados: {str(e)}"
         )
 
+
+# Configuração do CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://scammnet.site"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=3600,
+)
 
 # Adiciona middleware
 app.add_middleware(SecurityHeadersMiddleware)
