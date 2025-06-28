@@ -7,8 +7,11 @@ from fastapi.responses import Response
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 security = HTTPBearer()
-firebase_service = FirebaseService()
 logger = logging.getLogger(__name__)
+
+def get_firebase_service():
+    """Função para obter instância do FirebaseService"""
+    return FirebaseService()
 
 class LoginRequest(BaseModel):
     email: str
@@ -17,6 +20,7 @@ class LoginRequest(BaseModel):
 @router.post("/login")
 async def login(request: LoginRequest):
     try:
+        firebase_service = get_firebase_service()
         # Autentica com Firebase
         user = await firebase_service.authenticate_user(request.email, request.password)
         
@@ -52,6 +56,7 @@ async def options_login():
 
 async def verify_admin_token(credentials: HTTPBearer = Security(security)):
     try:
+        firebase_service = get_firebase_service()
         # Verifica se o token é de um admin
         token = credentials.credentials
         claims = await firebase_service.verify_admin_token(token)

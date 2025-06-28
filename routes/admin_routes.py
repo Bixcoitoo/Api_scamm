@@ -5,20 +5,26 @@ from fastapi.security import APIKeyHeader
 import logging
 
 router = APIRouter(prefix="/admin", tags=["admin"])
-preco_service = PrecoService()
 logger = logging.getLogger(__name__)
+
+def get_preco_service():
+    """Função para obter instância do PrecoService"""
+    return PrecoService()
 
 @router.get("/precos")
 async def listar_precos():
+    preco_service = get_preco_service()
     return await preco_service.get_precos()
 
 @router.put("/precos")
 async def atualizar_precos(config: PrecosConfig):
+    preco_service = get_preco_service()
     return await preco_service.atualizar_precos(config.precos)
 
 @router.get("/admin/test-dashboard")
 async def test_dashboard():
     """Rota de teste que retorna dados mockados do dashboard"""
+    preco_service = get_preco_service()
     precos_atuais = await preco_service.get_precos()
     
     return {
@@ -66,6 +72,7 @@ async def admin_home():
 async def test_admin():
     try:
         # Testa conexão com Firestore
+        preco_service = get_preco_service()
         precos = await preco_service.get_precos()
         return {
             "status": "ok",

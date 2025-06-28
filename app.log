@@ -2,3 +2,23 @@
 2025-05-24 00:22:05,702 [INFO] Iniciando aplicação...
 2025-05-24 00:22:05,704 [INFO] Firebase inicializado com sucesso
 2025-05-24 00:23:25,041 [INFO] Iniciando desligamento gracioso...
+2025-06-28 12:44:26,894 [INFO] ConnectionManager iniciado
+2025-06-28 12:44:35,254 [INFO] ConnectionManager iniciado
+2025-06-28 12:44:38,615 [INFO] ConnectionManager iniciado
+2025-06-28 12:44:42,056 [INFO] ConnectionManager iniciado
+2025-06-28 12:47:28,923 [INFO] ConnectionManager iniciado
+2025-06-28 12:47:39,596 [INFO] ConnectionManager iniciado
+2025-06-28 12:47:42,038 [INFO] ConnectionManager iniciado
+2025-06-28 12:47:46,839 [INFO] ConnectionManager iniciado
+2025-06-28 12:47:56,347 [INFO] ConnectionManager iniciado
+2025-06-28 12:48:01,749 [INFO] ConnectionManager iniciado
+2025-06-28 12:48:04,223 [INFO] ConnectionManager iniciado
+2025-06-28 12:48:41,822 [INFO] ConnectionManager iniciado
+2025-06-28 12:50:30,628 [INFO] ConnectionManager iniciado
+2025-06-28 12:50:32,822 [INFO] Conexão com Redis estabelecida com sucesso
+2025-06-28 12:50:32,823 [INFO] Iniciando aplicação...
+2025-06-28 12:50:32,829 [INFO] Tentando carregar credenciais do arquivo JSON...
+2025-06-28 12:50:32,829 [INFO] Credenciais do Firebase carregadas do arquivo: scammapi-firebase-adminsdk-fbsvc-5a86f9cc92.json
+2025-06-28 12:50:32,869 [INFO] Firebase inicializado com sucesso
+2025-06-28 12:50:33,686 [INFO] Elasticsearch inicializado com sucesso
+2025-06-28 12:50:33,687 [INFO] Firebase inicializado com sucesso

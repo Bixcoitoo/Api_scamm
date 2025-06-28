@@ -15,9 +15,13 @@ class PrecoService:
         return cls._instance
     
     def __init__(self):
-        self.db = firestore.client()
-        self._collection = 'configuracoes'
-        self._document = 'precos'
+        try:
+            self.db = firestore.client()
+            self._collection = 'configuracoes'
+            self._document = 'precos'
+        except Exception as e:
+            logger.error(f"Erro ao inicializar cliente Firestore: {str(e)}")
+            raise HTTPException(status_code=500, detail="Erro ao conectar com Firebase")
         
     async def get_precos(self) -> Dict[str, float]:
         try:

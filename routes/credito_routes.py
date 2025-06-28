@@ -6,12 +6,16 @@ import logging
 from fastapi.responses import JSONResponse
 
 router = APIRouter()
-firebase_service = FirebaseService()
 logger = logging.getLogger(__name__)
+
+def get_firebase_service():
+    """Função para obter instância do FirebaseService"""
+    return FirebaseService()
 
 @router.get("/creditos/saldo/{user_id}")
 async def consultar_saldo(user_id: str):
     try:
+        firebase_service = get_firebase_service()
         usuario_ref = firebase_service.db.collection('usuarios').document(user_id)
         usuario = usuario_ref.get()
         
@@ -27,6 +31,7 @@ async def consultar_saldo(user_id: str):
 @router.post("/creditos/adicionar")
 async def adicionar_creditos(transacao: TransacaoCredito):
     try:
+        firebase_service = get_firebase_service()
         # Busca usuário
         usuario_ref = firebase_service.db.collection('usuarios').document(transacao.user_id)
         usuario = usuario_ref.get()
@@ -66,6 +71,7 @@ async def adicionar_creditos(transacao: TransacaoCredito):
 @router.get("/creditos/historico/{user_id}")
 async def historico_transacoes(user_id: str, dias: int = 30):
     try:
+        firebase_service = get_firebase_service()
         transacoes_ref = firebase_service.db.collection('usuarios').document(user_id).collection('transacoes')
         transacoes = transacoes_ref.get()
         
@@ -91,6 +97,7 @@ async def historico_transacoes(user_id: str, dias: int = 30):
 @router.post("/creditos/teste-conexao")
 async def teste_conexao():
     try:
+        firebase_service = get_firebase_service()
         # Tenta criar um documento de teste
         ref = firebase_service.db.collection('teste').document()
         ref.set({

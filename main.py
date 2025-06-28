@@ -73,14 +73,10 @@ logger = setup_logger()
 # Primeiro carrega as variáveis de ambiente
 load_dotenv()
 
-# Inicializa o serviço do Firebase
-firebase_service = FirebaseService()
-
-# Inicializa o serviço da API externa
-external_api_service = ExternalAPIService()
-
-# Inicializa o serviço Elasticsearch
-elasticsearch_service = ElasticsearchService()
+# Variáveis globais para os serviços (serão inicializadas no lifespan)
+firebase_service = None
+external_api_service = None
+elasticsearch_service = None
 
 def check_redis_connection():
     try:
@@ -100,7 +96,14 @@ async def lifespan(app: FastAPI):
     # Configuração ao iniciar
     logger.info("Iniciando aplicação...")
     load_dotenv()
+    
+    # Inicializa os serviços
+    global firebase_service, external_api_service, elasticsearch_service
+    
     try:
+        firebase_service = FirebaseService()
+        external_api_service = ExternalAPIService()
+        elasticsearch_service = ElasticsearchService()
         logger.info("Firebase inicializado com sucesso")
     except Exception as e:
         logger.error(f"Erro ao inicializar Firebase: {str(e)}")

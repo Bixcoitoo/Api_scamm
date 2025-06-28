@@ -27,10 +27,16 @@ except ImportError:
 
 router = APIRouter()
 api_key_header = APIKeyHeader(name="X-API-Key")
-firebase_service = FirebaseService()
 logger = logging.getLogger(__name__)
 
+def get_firebase_service():
+    """Função para obter instância do FirebaseService"""
+    return FirebaseService()
 
+def get_preco_service():
+    """Função para obter instância do PrecoService"""
+    from services.preco_service import PrecoService
+    return PrecoService()
 
 def remover_acentos(texto: str) -> str:
     return ''.join(c for c in unicodedata.normalize('NFD', texto)
@@ -138,8 +144,13 @@ async def consulta_cpf(
         logger.info(f"User ID: {user_id}")
         logger.info(f"Payload CPF: {payload.cpf}")
         
+        # Obtém o preço da consulta
+        preco_service = get_preco_service()
+        valor_consulta = await preco_service.get_preco_consulta("cpf")
+        
         # Verifica saldo antes da consulta
-        await firebase_service.verificar_saldo(user_id, "cpf")
+        firebase_service = get_firebase_service()
+        await firebase_service.verificar_saldo(user_id, "cpf", valor_consulta)
         
         # Executa a consulta usando o service
         result = await consulta_cpf_service(payload.cpf, api_key)
@@ -222,8 +233,13 @@ async def consulta_nome_post(
 ):
     """Consulta pessoas por nome (POST)"""
     try:
+        # Obtém o preço da consulta
+        preco_service = get_preco_service()
+        valor_consulta = await preco_service.get_preco_consulta("nome")
+        
         # Verifica saldo antes da consulta
-        await firebase_service.verificar_saldo(user_id, "nome", {"nome": nome})
+        firebase_service = get_firebase_service()
+        await firebase_service.verificar_saldo(user_id, "nome", valor_consulta, {"nome": nome})
         
         logger.info(f"Iniciando consulta para nome: {nome}")
         
@@ -329,5 +345,19 @@ async def consulta_telefone_post(
     api_key: str = Depends(api_key_header)
 ):
     """Consulta pessoas por telefone (POST)"""
-    await firebase_service.verificar_saldo(user_id, "telefone", {"telefone": telefone})
-    return await _consulta_telefone(telefone, api_key)
+    try:
+        # Obtém o preço da consulta
+        preco_service = get_preco_service()
+        valor_consulta = await preco_service.get_preco_consulta("telefone")
+        
+        # Verifica saldo antes da consulta
+        firebase_service = get_firebase_service()
+        await firebase_service.verificar_saldo(user_id, "telefone", valor_consulta, {"telefone": telefone})
+        
+        return await _consulta_telefone(telefone, api_key)
+    except Exception as e:
+        logger.error(f"Erro na consulta por telefone: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail={"code": "SEARCH_ERROR", "message": str(e)}
+        )

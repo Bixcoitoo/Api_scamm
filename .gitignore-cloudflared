@@ -1,0 +1,28 @@
+# Arquivos de configuração sensíveis
+.env
+cloudflared/credentials.json
+cloudflared/cert.pem
+
+# Logs
+*.log
+logs/
+
+# Backups
+backups/
+
+# Cache
+.cache/
+*.tmp
+
+# Arquivos temporários
+*.swp
+*.swo
+*~
+
+# Diretórios do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de configuração local
+config.local.yml
+*.local 
